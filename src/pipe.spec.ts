@@ -100,3 +100,30 @@ describe('Execute a set of synchronous functions', () => {
     expect(date).toEqual(output3);
   });
 });
+
+describe('Execute a set of asynchronous functions', () => {
+  it('should handle asynchrous function', async () => {
+    // Arrange
+    const initalInput = 'test';
+
+    type AsyncStr2Str = (str: string) => Promise<string>;
+    const asyncStr2Str: AsyncStr2Str = async (str) => `str2Str::${str}`;
+    const output1 = asyncStr2Str(initalInput);
+    const spy1 = jest.fn(asyncStr2Str);
+
+    type Str2Object = (str: string) => { str: string };
+    const str2Object: Str2Object = (str) => ({ str });
+    const output2 = str2Object(await output1);
+    const spy2 = jest.fn(str2Object);
+
+    // Act
+    type AsyncPipe = [AsyncStr2Str, Str2Object];
+    const result = pipe<AsyncPipe, Date>(spy1, spy2)(initalInput);
+
+    // Assert
+    expect(output1).toBeInstanceOf(Promise);
+    expect(output2).not.toBeInstanceOf(Promise);
+    expect(result).toBeInstanceOf(Promise);
+    expect(output2).toEqual(await result);
+  });
+});
