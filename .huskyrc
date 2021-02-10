@@ -1,0 +1,7 @@
+{
+  "hooks": {
+    "pre-commit": "./node_modules/.bin/lint-staged",
+    "pre-push": "yarn test",
+    "prepare-commit-msg": "exec < /dev/tty && node_modules/.bin/git-cz --hook || true",
+  }
+}
